@@ -57,3 +57,4 @@ install ()
     sudo cp negis /usr/local/bin
     sudo cp /home/$name/go/bin/* /usr/local/bin
 }
+install
