@@ -1,0 +1,146 @@
+#!/bin/bash
+
+# echo "@fancybearin"
+
+# Creating the folder 
+stage0() {
+    #locations
+    cd && pwd;
+    mkdir bugbounty;cd bugbounty;
+    pwd;
+    mkdir "$domain.";cd "$domain." && pwd;
+    clear
+}
+
+#subdomain enumeration 
+
+subdomain () {
+    
+    #subfinder 
+    xterm -e "subfinder -d $domain | tee -a  subdomain" &&
+    xterm -e "assetfinder -subs-only $domain | tee -a subdomain" &&
+    xterm -e "amass enum -norecursive -noalts -d $domain | tee -a subdomain" &&    
+    xterm -e "findomain --external-subdomains --output --target "$domain" --unique-output subdomain";
+    
+    ## Subdomain file sort 
+    cat subdomain | sort -u | tee -a domain.txt
+    
+    #testing for subdomain takeover
+    xterm -e "subjack -w totalsub4 -t 100 -timeout 30 -ssl -c /home/bear/go/pkg/mod/github.com/haccer/subjack@v0.0.0-20201112041112-49c51e57deab/fingerprints.json -v 3 >> takeover"
+  
+}
+
+link () {
+    
+
+    # httpx & httprobe
+    xterm -e "cat domain.txt | httpx | tee -a link.txt" &  xterm -e "cat domain.txt | httprobe | tee -a link.txt";
+    wait
+    xterm -e "cat link.txt | sort -u | tee -a link2.txt"
+
+    # old link extraction
+    xterm -e "cat link2.txt | gau | tee -a extract.txt" & xterm -e "cat linksort.txt | waybackurls | tee -a extract.txt";
+    wait
+    xterm -e "cat extract.txt | sort -u | tee -a oldext.txt";
+
+    # link testing last 
+    xterm -e "cat oldext.txt | httpx | tee -a old.txt" &
+    xterm -e "cat oldext.txt | httprobe -c 10 | tee -a old.txt"&
+    xterm -e "cat oldext.txt | katana -d 4 -o old.txt" &
+    xterm -e "cat oldext.txt | galer -o old.txt;"
+   
+    
+    wait
+    xterm -e "cat old.txt | sort -u | tee -a urls.txt ";
+    xterm  -e "gg urls.txt"
+   
+}
+
+
+testing () {
+    xss () {
+      #Cross site scripting testing 
+      xterm -e "cat xss | Gxss | tee -a  gxss"
+      xterm -e "cat gxss| dalfox pipe | tee -a Dalfox"
+    }
+    
+    ssrf () {
+      xterm -e " ssrftool -domains link2.txt -payloads /home/bear/.git/ssrf-tool/important/payloads.txt -silent=false -paths=true -patterns ~/ssrf-tool/important/patterns.txt | tee -a ssrf1" ;
+      xterm -e " ssrftool -domains oldext.txt -payloads /home/bear/.git/ssrf-tool/important/payloads.txt -silent=false -paths=true -patterns ~/ssrf-tool/important/patterns.txt | tee -a ssrf2" ;
+      xterm -e " ssrftool -domains ssrf -payloads /home/bear/.git/ssrf-tool/important/payloads.txt -silent=false -paths=true -patterns ~/ssrf-tool/important/patterns.txt | tee -a ssrf3" ;
+     }
+
+
+
+    xss
+    ssrf
+}
+
+#logic area
+configure () {
+select option in extraction testing exit #select the three option 
+do
+    case $option in 
+        
+        extraction)
+        clear
+                echo "extraction." 
+                echo "for back press 5 and double enter it."
+                stage0
+                select process in subdomain link same testing back # select child option of extraction also go back
+                do
+                    case $process in 
+                        subdomain)
+                               subdomain
+                               continue
+                               ;;
+                        link)
+                            link
+                           continue
+                           ;;
+                        same)
+                           echo "both are running"
+                           subdomain
+                           link
+                           continue
+                           ;;    
+                        testing)
+                             echo "testing is start."
+                            testing
+                              break
+                            ;;
+                         back)
+                            break 
+                            ;; 
+                           *)
+                            echo "try again.."
+                            continue
+                        ;;
+                    esac
+
+                
+                done
+                continue
+                ;;
+        
+        testing)
+        clear
+                echo "testing is start."
+                testing
+                break
+                ;;
+
+        exit)
+            break 
+           ;; 
+            *)
+            echo "try again.."
+            continue
+             ;;
+        esac
+done
+
+  }
+
+domain=$1
+configure
