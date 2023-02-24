@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# echo "@fancybearin"
+echo "@fancybearin"
+
 
 # Creating the folder 
 stage0() {
@@ -70,16 +71,14 @@ testing () {
       xterm -e " ssrftool -domains ssrf -payloads /home/bear/.git/ssrf-tool/important/payloads.txt -silent=false -paths=true -patterns ~/ssrf-tool/important/patterns.txt | tee -a ssrf3" ;
      }
 
-
-
     xss
     ssrf
 }
 
 #logic area
 configure () {
-select option in extraction testing exit #select the three option 
-do
+ select option in extraction testing neutral exit #select the three option 
+ do
     case $option in 
         
         extraction)
@@ -129,6 +128,16 @@ do
                 testing
                 break
                 ;;
+        neutral)
+        clear 
+            echo "no option to select"
+            subdomain
+            clear
+            link
+            clear
+            testing
+           break
+           ;;
 
         exit)
             break 
@@ -138,9 +147,11 @@ do
             continue
              ;;
         esac
-done
+ done
 
+ 
   }
+
 
 domain=$1
 configure
