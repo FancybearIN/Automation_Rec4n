@@ -15,6 +15,6 @@
 
 2\.  restart the terminal 
 
-    use target example.com
+    negis example.com
 
 happy hacking
