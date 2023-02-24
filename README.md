@@ -9,7 +9,7 @@
 
 1\. Run this command on the terminal 
 
-    sudo bash ./install.sh
+    sudo bash ./supply
 
  make sure enter the path corrrectly. where you install, it help you make the command for the tool.
 
