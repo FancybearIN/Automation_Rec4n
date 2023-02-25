@@ -1,59 +1,79 @@
 #!/bin/bash
 
-
+install () 
+{
+    #command build for tool
+    sudo cp gg  /usr/local/bin
+    sudo cp negis /usr/local/bin
+   
+}
+install
 # update the system
 sudo apt update -y; sudo apt upgrade -y; sudo apt autoremove -y; sudo apt autoclean -y; sudo apt dist-upgrade -y
-
+clear
 #installation of language 
         sudo apt install golang ; sudo apt install go-lang
-
+clear
 # install of tools 
 sudo apt install xterm -y
-
- go install  github.com/projectdiscovery/dnsprobe@latest 
-        go install  github.com/projectdiscovery/httpx/cmd/httpx@latest
-        go install  github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
-        go install  github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-        go install  github.com/projectdiscovery/assetfinder/v2/cmd/assetfinder@latest
+clear
+projectdiscovery () {
+ go install  github.com/projectdiscovery/dnsprobe@latest  
+ go install  github.com/projectdiscovery/httpx/cmd/httpx@latest
+ go install  github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+ go install  github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+ go install  github.com/projectdiscovery/assetfinder/v2/cmd/assetfinder@latest
+ clear
+}
+tomnomnom () {
  go install  github.com/tomnomnom/httprobe@latest
-           go install  github.com/tomnomnom/gf@lastest
-           go install  github.com/tomnomnom/anew@lastest
-           go install  github.com/tomnomnom/waybackurls@lates
-            go install  github.com/ffuf/ffuf@latest
-            go install  github.com/lc/gau/v2/cmd/gau@latest
-            go install  github.com/hahwul/dalfox/v2@latest
-            sudo apt install amass
-            git clone https://github.com/R0X4R/ssrf-tool.git
-cd ssrf-tool
-go build ssrftool.go && mv ssrftool /usr/bin/
-cd..
-             go install github.com/dwisiswant0/galer@latest
-            go install  github.com/KathanP19/Gxss@latest
-go install github.com/projectdiscovery/katana/cmd/katana@latest
-            go install github.com/haccer/subjack@latest
-            configure () {
+ go install  github.com/tomnomnom/gf@lastest
+ go install  github.com/tomnomnom/anew@lastest
+ clear
+ go install  github.com/tomnomnom/waybackurls@lates
+ go install  github.com/ffuf/ffuf@latest
+ go install  github.com/lc/gau/v2/cmd/gau@latest
+ clear
+ go install  github.com/hahwul/dalfox/v2@latest
+ sudo apt install amass
+ clear
+  go install github.com/dwisiswant0/galer@latest
+  go install  github.com/KathanP19/Gxss@latest
+  go install github.com/projectdiscovery/katana/cmd/katana@latest
+  go install github.com/haccer/subjack@latest
+}
+github () {
+  git clone https://github.com/R0X4R/ssrf-tool.git
+ cd ssrf-tool 
+  go build ssrftool.go && mv ssrftool /usr/bin/
+  cd..
+}
+configure () {
     git clone https://github.com/1ndianl33t/Gf-Patterns
     cd GF-Patterns
     mkdir .gf
     mv ~/mv ~/Gf-Patterns/*.json ~/.gf
-
+clear
 }
 
 find() {
-git clone https://github.com/findomain/findomain.git
-cd findomain
-cargo build --release
-sudo cp target/release/findomain /usr/bin/
-findomain
+  git clone https://github.com/findomain/findomain.git
+ cd findomain
+ cargo build --release
+ sudo cp target/release/findomain /usr/bin/
+ findomain
+ clear
 }
 
 
+
+edit() {
+ read -p "enter username" name
+  sudo cp /home/$name/go/bin/* /usr/local/bin
+}
+projectdiscovery
+tomnomnom
+github
 find
 configure
-install () 
-{
-    read -p "enter username" name
-    sudo cp gg  /usr/local/bin
-    sudo cp negis /usr/local/bin
-    sudo cp /home/$name/go/bin/* /usr/local/bin
-}
+edit
