@@ -11,8 +11,7 @@ This script automates the process of performing reconnaissance for bug bounty pr
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/automation-for-recon.git
-   cd automation-for-recon
+   git clone https://github.com/FancybearIN/Automation_Rec4n.git && cd Automation_Rec4n
 2. **Run the installation script:**
      ```bash   
         sudo bash install.sh
