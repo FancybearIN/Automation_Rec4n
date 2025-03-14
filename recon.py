@@ -1,6 +1,6 @@
-# filepath: c:\Users\HP\vscode\Automation_Rec4n\pentest_agent.py
 import os
 import subprocess
+import time
 from deepseek import DeepSeekAgent  # Hypothetical AI framework
 
 class PentestAgent(DeepSeekAgent):
