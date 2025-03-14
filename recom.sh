@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "@fancybearin"
-echo "Ankit thakus"
+echo "Ankit thakur"
 
 # Ensure the user provides a domain
 if [ -z "$1" ]; then
@@ -11,11 +11,24 @@ fi
 
 domain="$1"
 
-# Install dependencies
+# Install dependencies only if not already installed
 install_dependencies() {
-    echo "[*] Installing dependencies..."
-    apt-get update && apt-get install -y python3-pip git curl jq nmap
-    pip3 install subfinder assetfinder chaos alterx amass subjack shodan masscan dirsearch httpx waybackurls ffuf gau katana galer Gxss dalfox gf
+    echo "[*] Checking and installing dependencies..."
+    packages=(python3-pip git curl jq nmap)
+    for pkg in "${packages[@]}"; do
+        if ! dpkg -s "$pkg" &> /dev/null; then
+            echo "[*] Installing $pkg..."
+            apt-get install -y "$pkg"
+        fi
+    done
+
+    python_packages=(subfinder assetfinder chaos alterx amass subjack shodan masscan dirsearch httpx waybackurls ffuf gau katana galer Gxss dalfox gf)
+    for py_pkg in "${python_packages[@]}"; do
+        if ! pip3 show "$py_pkg" &> /dev/null; then
+            echo "[*] Installing $py_pkg..."
+            pip3 install "$py_pkg"
+        fi
+    done
 }
 
 # Setup working directories
