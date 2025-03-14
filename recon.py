@@ -26,6 +26,7 @@ class PentestAgent(DeepSeekAgent):
         os.makedirs(f"recon_results/{self.domain}/extracted_urls", exist_ok=True)
         os.makedirs(f"recon_results/{self.domain}/gf_parameters", exist_ok=True)
         os.makedirs(f"recon_results/{self.domain}/result", exist_ok=True)
+        os.makedirs(f"recon_results/{self.domain}/xss", exist_ok=True)
 
     def enumerate_subdomains(self):
         print(f"[*] Enumerating subdomains for {self.domain}...")
@@ -97,16 +98,56 @@ class PentestAgent(DeepSeekAgent):
     def test_vulnerabilities(self):
         print(f"[*] Running vulnerability tests for {self.domain}...")
 
-        subprocess.run(["Gxss", "-o", f"recon_results/{self.domain}/xss/gxss.txt", "-l", f"recon_results/{self.domain}/extracted_urls/final_urls.txt"])
-        subprocess.run(["dalfox", "pipe", "-o", f"recon_results/{self.domain}/result/dalfox.txt", "-l", f"recon_results/{self.domain}/xss/gxss.txt"])
+        # XSS Testing
+        self.find_xss_vulnerabilities()
 
+        # SSRF Testing
         subprocess.run(["ssrftool", "-domains", f"recon_results/{self.domain}/extracted_urls/unique_links.txt", "-payloads", "~/.git/ssrf-tool/important/payloads.txt", "-silent=false", "-paths=true", "-patterns", "~/.git/ssrf-tool/important/patterns.txt", "-o", f"recon_results/{self.domain}/result/ssrf1.txt"])
         subprocess.run(["ssrftool", "-domains", f"recon_results/{self.domain}/extracted_urls/cleaned_urls.txt", "-payloads", "~/.git/ssrf-tool/important/payloads.txt", "-silent=false", "-paths=true", "-patterns", "~/.git/ssrf-tool/important/patterns.txt", "-o", f"recon_results/{self.domain}/result/ssrf2.txt"])
         subprocess.run(["ssrftool", "-domains", f"recon_results/{self.domain}/ssrf/ssrf1.txt", "-payloads", "~/.git/ssrf-tool/important/payloads.txt", "-silent=false", "-paths=true", "-patterns", "~/.git/ssrf-tool/important/patterns.txt", "-o", f"recon_results/{self.domain}/result/ssrf3.txt"])
 
+        # SQL Injection Testing
         subprocess.run(["bash", "sqli", f"recon_results/{self.domain}/gf_parameters/sqli/sqli.txt", "-o", f"recon_results/{self.domain}/result/sqli_sqlmap_result.txt"])
 
+        # Nuclei Vulnerability Scanner
         subprocess.run(["nuclei", "-t", "./nuclei-templates/", "-o", f"recon_results/{self.domain}/result/result.txt", "-l", f"recon_results/{self.domain}/extracted_urls/final_urls.txt"])
+
+    def find_xss_vulnerabilities(self):
+        print(f"[*] Finding XSS vulnerabilities for {self.domain}...")
+
+        # Using Gxss
+        subprocess.run(["Gxss", "-o", f"recon_results/{self.domain}/xss/gxss.txt", "-l", f"recon_results/{self.domain}/extracted_urls/final_urls.txt"])
+        subprocess.run(["dalfox", "pipe", "-o", f"recon_results/{self.domain}/xss/dalfox.txt", "-l", f"recon_results/{self.domain}/xss/gxss.txt"])
+
+        # Using XSStrike
+        subprocess.run(["xsstrike", "-u", f"recon_results/{self.domain}/extracted_urls/final_urls.txt", "--crawl", "--output", f"recon_results/{self.domain}/xss/xsstrike.txt"])
+
+        # Using KXSS
+        subprocess.run(["kxss", "-u", f"recon_results/{self.domain}/extracted_urls/final_urls.txt", "-o", f"recon_results/{self.domain}/xss/kxss.txt"])
+
+        # Generate XSS Report
+        self.generate_xss_report()
+
+    def generate_xss_report(self):
+        print(f"[*] Generating XSS report for {self.domain}...")
+
+        report_path = f"recon_results/{self.domain}/xss/xss_report.txt"
+        with open(report_path, "w") as report:
+            report.write(f"XSS Vulnerability Report for {self.domain}\n")
+            report.write("="*50 + "\n\n")
+
+            tools = ["gxss", "dalfox", "xsstrike", "kxss"]
+            for tool in tools:
+                report.write(f"Results from {tool}:\n")
+                result_file = f"recon_results/{self.domain}/xss/{tool}.txt"
+                if os.path.isfile(result_file):
+                    with open(result_file, "r") as result:
+                        report.write(result.read())
+                else:
+                    report.write("No results found.\n")
+                report.write("\n" + "="*50 + "\n\n")
+
+        print(f"[*] XSS report generated at {report_path}")
 
     def run(self):
         self.install_dependencies()
