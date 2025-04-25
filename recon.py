@@ -134,10 +134,14 @@ class PentestAgent(DeepSeekAgent):
     def reflected_xss_methods(self):
         print(f"[*] Finding Reflected XSS vulnerabilities for {self.domain}...")
 
-        # Method 1: Using Burp Suite (Manual Step)
-        print("[*] Use Burp Suite with Reflection and Sentinel plugins to find reflected parameters.")
-
+        # Method 1: Using XSS Scanners
+        subprocess.run(["xsstrike", "-u", f"recon_results/{self.domain}/extracted_urls/final_urls.txt", "-o", f"recon_results/{self.domain}/xss/xsstrike.txt"])
+        subprocess.run(["kxss", "-i", f"recon_results/{self.domain}/extracted_urls/final_urls.txt", "-o", f"recon_results/{self.domain}/xss/kxss.txt"])
+        
+        
+        
         # Method 2: Using Waybackurls and similar tools
+        
         subprocess.run(["gau", "-o", f"recon_results/{self.domain}/xss/waybackurls.txt", self.domain])
         subprocess.run(["grep", "=", f"recon_results/{self.domain}/xss/waybackurls.txt", ">", f"recon_results/{self.domain}/xss/params.txt"])
         subprocess.run(["Gxss", "-o", f"recon_results/{self.domain}/xss/gxss.txt", "-l", f"recon_results/{self.domain}/xss/params.txt"])
