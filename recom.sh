@@ -143,13 +143,13 @@ test_vulnerabilities() {
 }
 
 # Execute all functions in order
-# create_output_dirs
-# enumerate_subdomains
-#check_takeover 
-#directory_bruteforce
-# extract_links
-# gf_analysis
-# perform_port_scan
+ create_output_dirs
+ enumerate_subdomains
+check_takeover 
+directory_bruteforce
+ extract_links
+ gf_analysis
+perform_port_scan
 test_vulnerabilities
 
 echo "[*] Recon process completed for $domain!"
